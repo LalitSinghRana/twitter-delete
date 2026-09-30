@@ -404,3 +404,4 @@ if (typeof process !== 'undefined' && process.argv[1]?.includes('twitter-delete.
   });
   btnDelete.addEventListener('click', () => deleteSelected());
 })();
+// ci test: stale bookmark artifacts
