@@ -4,7 +4,7 @@ Deletes your own Twitter posts that are older than "N" days and have fewer than 
 
 ## Install
 
-1. Open [`bookmarklet.url.txt`](bookmarklet.url.txt), select all, copy (one line starting with `javascript:`).
+1. Open [`twitter-delete.txt`](twitter-delete.txt), select all, copy (one line starting with `javascript:`).
 2. In your browser’s bookmark manager, **Add bookmark** → name **twitter-delete** → paste into **URL** → Save.
 
 ## Use
@@ -21,14 +21,11 @@ Only posts Twitter loads while the script scrolls your timeline are considered�
 
 ## Dev
 
-After editing `twitter-delete.js`, regenerate and commit the bookmark outputs (CI enforces this on PRs to `main`):
+Edit `twitter-delete.script.js`, then regenerate and commit `twitter-delete.txt` (CI enforces this on PRs to `main`):
 
 ```bash
-node twitter-delete.js        # matcher self-check
-node build-bookmarklet.js     # writes bookmarklet.url.txt + bookmarklet.html
-git add bookmarklet.url.txt bookmarklet.html
+node twitter-delete.script.js --write-bookmark
+git add twitter-delete.txt
 ```
-
-Optional local hook: run `node build-bookmarklet.js` before commit when `twitter-delete.js` changed. You do not need a separate “build step” on push—GitHub Actions runs the same check and fails the merge if those files are stale.
 
 MIT — see [LICENSE](LICENSE).

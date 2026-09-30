@@ -72,8 +72,29 @@ function runSelfCheck() {
   console.log('self-check ok');
 }
 
-if (typeof process !== 'undefined' && process.argv[1]?.includes('twitter-delete.js')) {
+const BOOKMARK_OUT = 'twitter-delete.txt';
+
+if (typeof process !== 'undefined' && process.argv[1]?.includes('twitter-delete.script.js')) {
+  const fs = require('fs');
+  const path = require('path');
+
+  function writeBookmarkFile() {
+    let src = fs.readFileSync(__filename, 'utf8');
+    src = src.replace(/const BOOKMARK_OUT = 'twitter-delete\.txt';\n\n/, '');
+    src = src.replace(/function runSelfCheck\(\) \{[\s\S]*?\n\}\n\n/, '');
+    src = src.replace(
+      /if \(typeof process !== 'undefined' && process\.argv\[1\]\?\.includes\('twitter-delete\.script\.js'\)\) \{[\s\S]*?process\.exit\(0\);\n\}/,
+      ''
+    );
+    const href = 'javascript:' + encodeURIComponent(src.trim());
+    fs.writeFileSync(path.join(__dirname, BOOKMARK_OUT), href + '\n');
+    console.log('Updated ' + BOOKMARK_OUT + ' (' + href.length + ' chars)');
+  }
+
   runSelfCheck();
+  if (process.argv.includes('--write-bookmark')) {
+    writeBookmarkFile();
+  }
   process.exit(0);
 }
 
