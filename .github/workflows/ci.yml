@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  bookmarklet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Matcher self-check
+        run: node twitter-delete.js
+      - name: Regenerate bookmarklet outputs
+        run: node build-bookmarklet.js
+      - name: Committed files match build
+        run: |
+          git diff --exit-code bookmarklet.html bookmarklet.url.txt || (
+            echo 'Run: node build-bookmarklet.js'
+            echo 'Then commit bookmarklet.html and bookmarklet.url.txt'
+            exit 1
+          )
