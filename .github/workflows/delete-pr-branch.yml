@@ -1,0 +1,38 @@
+name: Delete PR head branch
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+
+jobs:
+  delete-head-branch:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Delete head branch when PR closed without merge
+        if: github.event.pull_request.merged == false
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ref = context.payload.pull_request.head.ref;
+            if (ref === 'main' || ref === 'master') {
+              core.info('Skip default branch');
+              return;
+            }
+            try {
+              await github.rest.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'heads/' + ref,
+              });
+              core.info('Deleted branch ' + ref);
+            } catch (error) {
+              if (error.status === 422) {
+                core.info('Branch already deleted');
+                return;
+              }
+              throw error;
+            }
